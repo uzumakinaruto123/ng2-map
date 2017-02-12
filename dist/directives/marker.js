@@ -38,7 +38,10 @@ var Marker = (function (_super) {
                 _this.mapObject.setPosition(latLng);
             }, function (error) {
                 console.error(error);
-                _this.mapObject.setPosition(_this.objectOptions['geoFallbackPosition'] || new google.maps.LatLng(0, 0));
+                if (_this.objectOptions['geoFallbackPosition']) {
+                    _this.mapObject.setPosition(_this.objectOptions['geoFallbackPosition']);
+                }
+                // this.mapObject.setPosition(this.objectOptions['geoFallbackPosition'] || new google.maps.LatLng(0,0));
             }));
         }
         else if (typeof this['position'] === 'string') {
@@ -47,7 +50,17 @@ var Marker = (function (_super) {
                 _this.mapObject.setPosition(results[0].geometry.location);
             }, function (error) {
                 console.error(error);
-                _this.mapObject.setPosition(_this.objectOptions['geoFallbackPosition'] || new google.maps.LatLng(0, 0));
+                if (typeof _this.objectOptions['geoFallbackPosition'] === 'string') {
+                    _this.ng2MapComp.geoCoder.geocode({ address: _this.objectOptions['geoFallbackPosition'] }).subscribe(function (results) {
+                        console.log('setting marker position from fallback address', _this.objectOptions['geoFallbackPosition']);
+                        _this.mapObject.setPosition(results[0].geometry.location);
+                    }, function (error) {
+                        console.error(error);
+                    });
+                }
+                else {
+                }
+                // this.mapObject.setPosition(this.objectOptions['geoFallbackPosition'] || new google.maps.LatLng(0,0));
             }));
         }
     };

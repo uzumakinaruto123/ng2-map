@@ -109,7 +109,10 @@ var Ng2MapComponent = (function () {
                 _this.map.setCenter(latLng);
             }, function (error) {
                 console.error(error);
-                _this.map.setCenter(_this.mapOptions['geoFallbackCenter'] || new google.maps.LatLng(0, 0));
+                if (_this.mapOptions['geoFallbackCenter']) {
+                    _this.map.setCenter(_this.mapOptions['geoFallbackCenter']);
+                }
+                // this.map.setCenter(this.mapOptions['geoFallbackCenter'] || new google.maps.LatLng(0,0));
             });
         }
         else if (typeof this['center'] === 'string') {
@@ -117,7 +120,17 @@ var Ng2MapComponent = (function () {
                 console.log('setting map center from address', _this['center']);
                 _this.map.setCenter(results[0].geometry.location);
             }, function (error) {
-                _this.map.setCenter(_this.mapOptions['geoFallbackCenter'] || new google.maps.LatLng(0, 0));
+                if (typeof _this.mapOptions['geoFallbackCenter'] === 'string') {
+                    _this.geoCoder.geocode({ address: _this.mapOptions['geoFallbackCenter'] }).subscribe(function (results) {
+                        console.log('setting map center from fallback address', _this.mapOptions['geoFallbackCenter']);
+                        _this.map.setCenter(results[0].geometry.location);
+                    }, function (error) {
+                        console.error(error);
+                    });
+                }
+                else {
+                }
+                // this.map.setCenter(this.mapOptions['geoFallbackCenter'] || new google.maps.LatLng(0,0));
             });
         }
     };

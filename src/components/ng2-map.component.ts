@@ -163,7 +163,10 @@ export class Ng2MapComponent implements OnChanges, OnDestroy, AfterViewInit {
         },
         error => {
           console.error(error);
-          this.map.setCenter(this.mapOptions['geoFallbackCenter'] || new google.maps.LatLng(0,0));
+          if(this.mapOptions['geoFallbackCenter']){
+                   this.map.setCenter(this.mapOptions['geoFallbackCenter']);
+                }
+          // this.map.setCenter(this.mapOptions['geoFallbackCenter'] || new google.maps.LatLng(0,0));
         }
       );
     }
@@ -174,7 +177,17 @@ export class Ng2MapComponent implements OnChanges, OnDestroy, AfterViewInit {
           this.map.setCenter(results[0].geometry.location);
         },
         error => {
-          this.map.setCenter(this.mapOptions['geoFallbackCenter'] || new google.maps.LatLng(0,0));
+                if (typeof this.mapOptions['geoFallbackCenter'] === 'string') {
+                        this.geoCoder.geocode({ address: this.mapOptions['geoFallbackCenter'] }).subscribe( (results)=> {
+                            console.log('setting map center from fallback address', this.mapOptions['geoFallbackCenter']);
+                            this.map.setCenter(results[0].geometry.location);
+                        },  (error) => {
+                            console.error(error);
+                        });
+                }else{
+                        // _this.map.setCenter(_this.mapOptions['geoFallbackCenter'] || new google.maps.LatLng(0, 0));
+                }
+          // this.map.setCenter(this.mapOptions['geoFallbackCenter'] || new google.maps.LatLng(0,0));
         });
     }
   }
